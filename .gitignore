@@ -20,6 +20,7 @@ lib64/
 parts/
 sdist/
 var/
+flask/
 *.egg-info/
 .installed.cfg
 *.egg
