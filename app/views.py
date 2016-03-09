@@ -12,7 +12,7 @@ def print_user_input(query):
     if '=' in query:
         query_container, query_value = query.split('=')
         return 'Your query is {} which is equal to {}'.format(query_container, query_value)
-    return "You've entered an incorrect query. Please check and try again. Input : "+query
+    return "You've entered an incorrect query. Please check and try again. Input : {}".format(query)
 
 
 @url.errorhandler(404)
