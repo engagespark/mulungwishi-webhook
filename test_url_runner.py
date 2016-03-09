@@ -15,3 +15,15 @@ class LaunchingTest(unittest.TestCase):
     def test_invalid_url_page_not_found(self):
         result = self.client.get('/page/not/found')
         self.assertEqual(result.status_code, 404)
+
+    def test_invalid_query(self):
+       result = self.client.get('/any data input')
+       self.assertEqual(result.status_code, 400)
+
+    def test_valid_url(self):
+        result = self.client.get('/')
+        self.assertEqual(result.status_code, 200)
+
+    def test_valid_query(self):
+        result = self.client.get('/query_variable=query_value')
+        self.assertEqual(result.status_code, 200)
