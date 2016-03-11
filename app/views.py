@@ -1,5 +1,5 @@
 from app import mulungwishi_app as url
-from flask import render_template
+from flask import render_template, request
 
 
 @url.route('/')
@@ -7,12 +7,10 @@ def index():
     return render_template('index.html')
 
 
-@url.route('/<query>')
-def print_user_input(query):
-    if '=' in query:
-        query_container, query_value = query.split('=')
-        return 'Your query is {} which is equal to {}'.format(query_container, query_value)
-    return "You've entered an incorrect query. Please check and try again. You can try 'url=something relevant'".format(query), 400
+@url.route('/query')
+def show_user_input():
+    content = request.args.get('content')
+    return content or ("You've entered an incorrect/empty query. Please check and try again. You can try '/query?content=something relevant'", 400)
 
 
 @url.errorhandler(404)
