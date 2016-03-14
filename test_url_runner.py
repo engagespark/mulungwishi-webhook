@@ -24,6 +24,10 @@ class URLTest(unittest.TestCase):
         result = self.client.get('/query?content')
         self.assertEqual(result.status_code, 400)
 
+    def test_invalid_query_no_value_assigned(self):
+        result = self.client.get('/query?content=')
+        self.assertEqual(result.status_code, 400)
+
     def test_invalid_query_none(self):
         result = self.client.get('/query?')
         self.assertEqual(result.status_code, 400)
