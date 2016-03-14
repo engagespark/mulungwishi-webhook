@@ -1,7 +1,7 @@
 .PHONY: clean clean_remote pull_remote installdeps_remote deploy
 
 USER=mulungwishi
-HOST=toys
+HOST=107.155.72.115
 SSH_KEY=~/.ssh/mulungwishi_rsa
 CONNECT_TO_REMOTE=ssh -i $(SSH_KEY) -t $(USER)@$(HOST)
 
@@ -17,7 +17,7 @@ CD=cd /opt/webapps/mulungwishi
 PULL=git pull
 ACTIVATE=source /opt/pyenv/versions/3.5.1/envs/mulungwishi/bin/activate
 INSTALL=pip install -r requirements.txt
-RESTART_DJANGO=sudo service mulungwishi restart
+RESTART_APP=sudo service mulungwishi restart
 
 
 # local tasks
@@ -48,7 +48,7 @@ installdeps_remote:
 
 deploy: clean_remote pull_remote installdeps_remote
 	@echo "$(INFO)Restarting application...$(END)"
-	@$(CONNECT_TO_REMOTE) "$(RESTART_DJANGO)"
+	@$(CONNECT_TO_REMOTE) "$(RESTART_APP)"
 	@echo "$(INFO)Finished restarting application.$(END)"
 	@echo
 	@echo "$(SUCCESS)Deployment successful.$(END)"
