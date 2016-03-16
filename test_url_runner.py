@@ -47,6 +47,6 @@ class URLTest(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
 
     def test_valid_query(self):
-        valid_query = "content=farmer_sms&from=engagepspark+platform&to=mulungwishi_app"
+        valid_query = "content=farmer_sms&from=engagespark+platform&to=mulungwishi_app"
         result = self.client.get('/query?{}'.format(valid_query))
         self.assertEqual(result.status_code, 200)
