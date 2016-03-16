@@ -21,15 +21,25 @@ class URLTest(unittest.TestCase):
         self.assertEqual(result.status_code, 400)
 
     def test_invalid_query_empty(self):
-        result = self.client.get('/query?content')
+        result = self.client.get('/query?content&from&to')
         self.assertEqual(result.status_code, 400)
 
     def test_invalid_query_no_value_assigned(self):
-        result = self.client.get('/query?content=')
+        result = self.client.get('/query?content=&from=&to=')
         self.assertEqual(result.status_code, 400)
 
     def test_invalid_query_none(self):
         result = self.client.get('/query?')
+        self.assertEqual(result.status_code, 400)
+
+    def test_invalid_query_empty_num_from(self):
+        invalid_query_empty_num_from = "content=farmer_sms&from&to=number+to"
+        result = self.client.get('/query?{}'.format(invalid_query_empty_num_from))
+        self.assertEqual(result.status_code, 400)
+
+    def test_invalid_query_empty_num_to(self):
+        invalid_query_empty_num_to = "content=farmer_sms&from=number+from&to"
+        result = self.client.get('/query?{}'.format(invalid_query_empty_num_to))
         self.assertEqual(result.status_code, 400)
 
     def test_valid_url(self):
@@ -37,5 +47,6 @@ class URLTest(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
 
     def test_valid_query(self):
-        result = self.client.get('/query?content=farmer_sms')
+        valid_query = "content=farmer_sms&from=engagepspark+platform&to=mulungwishi_app"
+        result = self.client.get('/query?{}'.format(valid_query))
         self.assertEqual(result.status_code, 200)

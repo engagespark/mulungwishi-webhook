@@ -10,7 +10,14 @@ def index():
 @url.route('/query')
 def show_user_input():
     content = request.args.get('content')
-    return content or ("You've entered an incorrect/empty query. Please check and try again. You can try '/query?content=something relevant'", 400)
+    sms_from = request.args.get('from')
+    sms_to = request.args.get('to')
+
+    valid_query_message = "Content: {}  SMS From: {}    SMS To: {}".format(content, sms_from, sms_to)
+    invalid_query_message = "You've entered an incorrect/empty query. Please check and try again. You can try '/query?content=sms_content&from=number_it_came_from&to=number_it_will_go_to'"
+    invalid_query_status_code = 400
+
+    return valid_query_message if content and sms_from and sms_to else (invalid_query_message, invalid_query_status_code)
 
 
 @url.errorhandler(404)
