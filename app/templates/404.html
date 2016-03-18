@@ -3,5 +3,38 @@
 
 {% block error_content %}
     <h1>Error 404</h1>
-    <h3>The page you're looking for was not found. Please head back <a href="/">home</a>.</h3>
+    <h3>The page you're looking for was not found. You can head back <a href="/">home</a> or you can stay on this page and find then click the crazy box below.</h3>
+    <hr style="width:90%;" align="left">
+    <div id="container" style="height: 450px;">
+    	<div id="noli_me_tangere" class="crazy-box" onClick="show_popup()" onmouseover="randommove()">You didn't find me, did ya?</div>
+    </div>
+
+    <script type="text/javascript">
+    	var times_hovered = 0;
+
+    	window.onload(randommove());
+
+    	function randommove() {
+    		var maxWidth = document.getElementById('container').clientWidth;
+    		var maxHeight = document.getElementById('container').clientHeight;
+    		var height = document.getElementById('noli_me_tangere').clientHeight;
+    		var width = document.getElementById('noli_me_tangere').clientWidth;
+    		var noli_me_tangere = document.getElementById('noli_me_tangere');
+ 			newWidth = Math.floor(Math.random() * (maxWidth - width));
+ 			newHeight = Math.floor(Math.random() * (maxHeight - height));
+ 			noli_me_tangere.style.left = newWidth + "px";
+ 			if(newHeight > 150) {
+ 				noli_me_tangere.style.top = newHeight + "px";
+ 			} else {
+ 				noli_me_tangere.style.bottom = newHeight + "px";
+ 			}
+ 			times_hovered++;
+		}
+
+		function show_popup() {
+			window.alert('Oh Crap! You found me. By the way, you attempted ' + times_hovered + ' times on capturing the crazy-box');
+			times_hovered = 0;
+			randommove();
+		}
+    </script>
 {% endblock %}

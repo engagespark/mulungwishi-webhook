@@ -1,0 +1,33 @@
+.green-border-with-shadow {
+	width: 75%;
+	border: 2px solid #73AD62;
+	padding: 5px 5px 5px 5px;
+	border-radius: 25px;
+	box-shadow: 7px 7px 4px #888888;
+}
+
+.green-line {
+	width: 50%;
+	border-color: lawngreen;
+}
+
+.invisible-underline {
+	text-decoration: none;
+}
+.grow {
+	transition: all .2s ease-in-out;
+}
+.grow:hover {
+	transform: scale(1.05);
+}
+
+.crazy-box {
+	background-color: orange;
+	display: inline-block;
+	height: 20px;
+	position: absolute;
+	color: purple;
+	font-weight: bolder;
+	padding: 5px;
+	border: 2px inset turquoise;
+}
