@@ -1,7 +1,7 @@
 .PHONY: clean clean_remote pull_remote installdeps_remote deploy
 
 USER=mulungwishi
-HOST=107.155.72.115
+HOST=104.251.216.252
 SSH_KEY=~/.ssh/mulungwishi_rsa
 CONNECT_TO_REMOTE=ssh -i $(SSH_KEY) -t $(USER)@$(HOST)
 
