@@ -2,3 +2,4 @@ flake8==2.5.4
 Flask==0.10.1
 gunicorn==19.4.5
 pytest==2.8.7
+requests==2.9.1
