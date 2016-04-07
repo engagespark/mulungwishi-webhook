@@ -1,4 +1,6 @@
+import forecastio
 from app import mulungwishi_app as url
+from config import FORECAST_API_KEY
 from flask import render_template, request
 
 
@@ -18,6 +20,16 @@ def show_user_input():
     invalid_query_status_code = 400
 
     return valid_query_message if content and sms_from and sms_to else (invalid_query_message, invalid_query_status_code)
+
+
+@url.route('/ask_weather')
+def generate_forecast():
+    query = request.args.get('coordinates')
+    if not query:
+        return 'No coordinates provided.', 400
+    latitude, longitude = query.split(',')
+    forecast = forecastio.load_forecast(FORECAST_API_KEY, latitude, longitude).currently()
+    return 'Time: {}\nTemperature: {}\nHumidity: {}\nProbability of Precipitation: {}\nSummary: {}'.format(forecast.time.strftime('%I:%M:%S %p'), forecast.temperature, forecast.humidity, forecast.precipProbability, forecast.summary)
 
 
 @url.errorhandler(404)
