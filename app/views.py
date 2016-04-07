@@ -1,6 +1,5 @@
-import forecastio
+from .weather_parser import WeatherForecast
 from app import mulungwishi_app as url
-from config import FORECAST_API_KEY
 from flask import render_template, request
 
 
@@ -22,14 +21,18 @@ def show_user_input():
     return valid_query_message if content and sms_from and sms_to else (invalid_query_message, invalid_query_status_code)
 
 
-@url.route('/ask_weather')
+@url.route('/weather_forecast')
 def generate_forecast():
-    query = request.args.get('coordinates')
-    if not query:
-        return 'No coordinates provided.', 400
-    latitude, longitude = query.split(',')
-    forecast = forecastio.load_forecast(FORECAST_API_KEY, latitude, longitude).currently()
-    return 'Time: {}\nTemperature: {}\nHumidity: {}\nProbability of Precipitation: {}\nSummary: {}'.format(forecast.time.strftime('%I:%M:%S %p'), forecast.temperature, forecast.humidity, forecast.precipProbability, forecast.summary)
+    forecast = WeatherForecast()
+    place = request.args.get('address')
+    if not place:
+        return 'No address provided.', 400
+    query_status = forecast.get_requests(address=place)
+    if not isinstance(query_status, str):
+        weather_forecast = forecast.generate_forecast(address=place)
+        place_info = forecast.get_place_info()
+        return 'WEATHER FORECAST FOR {}: \nPlace Type: {}\n{}'.format(place_info['formatted_address'].upper(), place_info['place_type'], display(forecast=weather_forecast))
+    return '{}. Try a more generic place name i.e. local, province'.format(weather_forecast), 400
 
 
 @url.errorhandler(404)
@@ -45,3 +48,11 @@ def page_forbidden(error):
 @url.errorhandler(500)
 def page_server_error(error):
     return render_template('500.html', title='Server Error'), 500
+
+
+def convert_to_readable_time(time):
+    return time.strftime('%a %b %d,%Y %I:%M:%S %p')
+
+
+def display(forecast):
+    return 'Time: {}\nTemperature: {}°C\nHumidity: {}\nProbability of Precipitation: {}\nWeather Summary: {}'.format(convert_to_readable_time(forecast.time), round(forecast.temperature, 2), forecast.humidity, forecast.precipProbability, forecast.summary)
