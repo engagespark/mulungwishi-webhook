@@ -1,5 +1,5 @@
 import os
 
 
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+GEOCODE_API_KEY = os.getenv('GEOCODE_API_KEY')
 FORECAST_API_KEY = os.getenv('FORECAST_API_KEY')
