@@ -1,6 +1,7 @@
-from .weather_parser import WeatherForecast
 from app import mulungwishi_app as url
 from flask import render_template, request
+from .geocode_api_parser import Geocode
+from .weather_parser import WeatherForecast
 
 
 @url.route('/')
@@ -23,16 +24,20 @@ def show_user_input():
 
 @url.route('/weather_forecast')
 def generate_forecast():
-    forecast = WeatherForecast()
     place = request.args.get('address')
     if not place:
         return 'No address provided.', 400
-    query_status = forecast.get_requests(address=place)
-    if not isinstance(query_status, str):
-        weather_forecast = forecast.generate_forecast(address=place)
-        place_info = forecast.get_place_info()
-        return 'WEATHER FORECAST FOR {}: \nPlace Type: {}\n{}'.format(place_info['formatted_address'].upper(), place_info['place_type'], display(forecast=weather_forecast))
-    return '{}. Try a more generic place name i.e. local, province'.format(weather_forecast), 400
+
+    geocode = Geocode(address=place)
+    is_place_valid = geocode.is_place_query_valid()
+    if not is_place_valid:
+        return 'No results found. Try a more generic place name i.e. local, province', 400
+
+    forecast = WeatherForecast()
+    coordinates = geocode.get_coordinates()
+    weather_forecast = forecast.generate_forecast(latitude=coordinates['lat'], longitude=coordinates['lng'])
+    place_info = geocode.get_place_info()
+    return 'WEATHER FORECAST FOR {}: \nPlace Type: {}\n{}'.format(place_info['formatted_address'].upper(), place_info['place_type'], display(forecast=weather_forecast))
 
 
 @url.errorhandler(404)
