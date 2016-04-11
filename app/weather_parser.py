@@ -1,11 +1,11 @@
 import forecastio
 import json
 import requests
-from config import FORECAST_API_KEY, GOOGLE_API_KEY
+from config import FORECAST_API_KEY, GEOCODE_API_KEY
 
 
 forecast_api_key = FORECAST_API_KEY
-geocode_api_key = GOOGLE_API_KEY
+geocode_api_key = GEOCODE_API_KEY
 geocode_url = 'https://maps.googleapis.com/maps/api/geocode/json?'
 place_type = None
 formatted_address = None
@@ -36,7 +36,7 @@ class WeatherForecast:
         return ({'place_type': self.place_type, 'formatted_address': self.formatted_address})
 
     def get_geocode_request(self, address):
-        return json.loads(requests.get('{}address={}&key={}'.format(geocode_url, address, GOOGLE_API_KEY)).text)
+        return json.loads(requests.get('{}address={}&key={}'.format(geocode_url, address, geocode_api_key)).text)
 
     def get_forecast_request(self, latitude, longitude):
         return forecastio.load_forecast(forecast_api_key, latitude, longitude)
