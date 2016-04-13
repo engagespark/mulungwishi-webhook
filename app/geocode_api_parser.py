@@ -32,3 +32,7 @@ class Geocode:
         self.formatted_address = geocode_info['results'][0]['formatted_address']
         self.place_type = geocode_info['results'][0]['address_components'][0]['types'][0]
         return {'place_type': self.place_type, 'formatted_address': self.formatted_address}
+
+    @staticmethod
+    def check_geocode_api_is_present():
+        return bool(GEOCODE_API_KEY)

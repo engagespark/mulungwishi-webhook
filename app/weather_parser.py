@@ -14,3 +14,7 @@ class WeatherForecast:
 
     def get_forecast_request(self, latitude, longitude):
         return forecastio.load_forecast(FORECAST_API_KEY, latitude, longitude)
+
+    @staticmethod
+    def check_forecast_api_is_present():
+            return bool(FORECAST_API_KEY)

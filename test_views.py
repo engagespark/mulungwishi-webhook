@@ -73,11 +73,15 @@ class URLTest(unittest.TestCase):
         self.assertTrue(is_place_query_valid.called)
         self.assertEqual(result.status_code, 400)
 
+    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
+    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_coordinates')
     @patch('app.geocode_api_parser.Geocode.get_place_info')
     @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast):
+    def test_valid_weather_url_valid_address(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
+        check_geocode_api_is_present.return_value = True
+        check_forecast_api_is_present.return_value = True
         is_place_query_valid.return_value = True
         get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
         get_place_info.return_value = {
@@ -97,11 +101,15 @@ class URLTest(unittest.TestCase):
         self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
         self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
+    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
+    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_coordinates')
     @patch('app.geocode_api_parser.Geocode.get_place_info')
     @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address_currently(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast):
+    def test_valid_weather_url_valid_address_currently(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
+        check_geocode_api_is_present.return_value = True
+        check_forecast_api_is_present.return_value = True
         is_place_query_valid.return_value = True
         get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
         get_place_info.return_value = {
@@ -121,11 +129,15 @@ class URLTest(unittest.TestCase):
         self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
         self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
+    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
+    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_coordinates')
     @patch('app.geocode_api_parser.Geocode.get_place_info')
     @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address_hourly(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast):
+    def test_valid_weather_url_valid_address_hourly(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
+        check_geocode_api_is_present.return_value = True
+        check_forecast_api_is_present.return_value = True
         is_place_query_valid.return_value = True
         get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
         get_place_info.return_value = {'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'place_type': 'neighborhood'}
@@ -163,11 +175,15 @@ class URLTest(unittest.TestCase):
         self.assertTrue('precipProbability: 0.11' in str(result.data))
         self.assertTrue('summary: Partly Cloudy' in str(result.data))
 
+    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
+    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_coordinates')
     @patch('app.geocode_api_parser.Geocode.get_place_info')
     @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address_daily(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast):
+    def test_valid_weather_url_valid_address_daily(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
+        check_forecast_api_is_present.return_value= True
+        check_geocode_api_is_present.return_value = True
         is_place_query_valid.return_value = True
         get_place_info.return_value = {'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'place_type': 'neighborhood'}
         get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}

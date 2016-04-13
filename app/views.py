@@ -1,5 +1,5 @@
 from app import mulungwishi_app as url
-from flask import render_template, request
+from flask import render_template, request, url_for
 from .geocode_api_parser import Geocode
 from .weather_parser import WeatherForecast
 
@@ -25,6 +25,9 @@ def show_user_input():
 
 @url.route('/weather_forecast')
 def generate_forecast():
+    if not Geocode.check_geocode_api_is_present() and WeatherForecast.check_forecast_api_is_present():
+        return url_for('page_server_error')
+
     place = request.args.get('address')
     if not place:
         return 'No address provided.', 400
