@@ -29,18 +29,18 @@ def generate_forecast():
     if not place:
         return 'No address provided.', 400
 
+    frequency = 'currently'  # default forecast set to current
+    valid_frequency = ['currently', 'hourly', 'daily']
+    last_query = place.split(' ')[-1].lower()
+    if last_query in valid_frequency:
+        place = place.replace(last_query, '')  # replace time method(if present) with empty string so that only the place remains. Example query: cebu hourly
+        frequency = last_query
+
     geocode = Geocode(address=place)
     is_place_valid = geocode.is_place_query_valid()
 
     if not is_place_valid:
         return 'No results found. Try a more generic place name i.e. local, province', 400
-
-    frequency = 'currently'  # default forecast set to current
-    valid_frequency = ['currently', 'hourly']
-    last_query = place.split(' ')[-1].lower()
-    if last_query in valid_frequency:
-        place = place.replace(last_query, '')  # replace time method(if present) with empty string so that only the place remains. Example query: cebu hourly
-        frequency = last_query
 
     forecast = WeatherForecast()
     coordinates = geocode.get_coordinates()
@@ -66,21 +66,25 @@ def page_server_error(error):
 
 
 def convert_to_readable_time(time):
-    return time.strftime('%a %b %d,%Y %I:%M:%S %p')
+    return time.strftime('%a %b %d, %Y %I:%M:%S %p')
 
 
 def display(forecast, frequency):
     if frequency == 'currently':
-        return 'Time: {}\nTemperature: {}°C\nHumidity: {}\nProbability of Precipitation: {}\nWeather Summary: {}'.\
+        return '{}\nTemperature: {}°C\nHumidity: {}\nProbability of Precipitation: {}\nWeather Summary: {}'.\
             format(convert_to_readable_time(forecast.time), round(forecast.temperature, 2), forecast.humidity, forecast.precipProbability, forecast.summary)
 
     info = []
     for count, item in enumerate(forecast.data):
-        info.append('time: {}'.format(convert_to_readable_time(item.time)))
-        info.append('temperature: {}'.format(item.temperature))
-        info.append('humidity: {}'.format(item.humidity))
-        info.append('precipProbability: {}'.format(item.precipProbability))
-        info.append('summary: {}\n'.format(item.summary))
+        info.append(str(convert_to_readable_time(item.time)))
+        if frequency == 'hourly':
+            info.append('temperature: ' + str(item.temperature))
+        else:
+            info.append('temperatureMin: ' + str(item.temperatureMin))
+            info.append('temperatureMax: ' + str(item.temperatureMax))
+        info.append('humidity: ' + str(item.humidity))
+        info.append('precipProbability: ' + str(item.precipProbability))
+        info.append('summary: ' + str(item.summary) + '\n')
         if count > 12:
             break
     return '\n'.join(info)
