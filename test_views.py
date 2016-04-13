@@ -92,6 +92,10 @@ class URLTest(unittest.TestCase):
         self.assertTrue(generate_forecast.called)
         self.assertTrue(get_place_info.called)
         self.assertEqual(result.status_code, 200)
+        self.assertTrue('Temperature: 31.79' in str(result.data))
+        self.assertTrue('Humidity: 0.58' in str(result.data))
+        self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
+        self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_coordinates')
@@ -112,6 +116,10 @@ class URLTest(unittest.TestCase):
         self.assertTrue(generate_forecast.called)
         self.assertTrue(get_place_info.called)
         self.assertEqual(result.status_code, 200)
+        self.assertTrue('Temperature: 31.79' in str(result.data))
+        self.assertTrue('Humidity: 0.58' in str(result.data))
+        self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
+        self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_coordinates')
@@ -150,3 +158,61 @@ class URLTest(unittest.TestCase):
         self.assertTrue(generate_forecast.called)
         self.assertTrue(get_place_info.called)
         self.assertEqual(result.status_code, 200)
+        self.assertTrue('temperature: 89.06' in str(result.data))
+        self.assertTrue('humidity: 0.59' in str(result.data))
+        self.assertTrue('precipProbability: 0.11' in str(result.data))
+        self.assertTrue('summary: Partly Cloudy' in str(result.data))
+
+    @patch('app.weather_parser.WeatherForecast.generate_forecast')
+    @patch('app.geocode_api_parser.Geocode.get_coordinates')
+    @patch('app.geocode_api_parser.Geocode.get_place_info')
+    @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
+    def test_valid_weather_url_valid_address_daily(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast):
+        is_place_query_valid.return_value = True
+        get_place_info.return_value = {'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'place_type': 'neighborhood'}
+        get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
+        mock_daily = {
+            "summary": "Light rain throughout the week, with temperatures falling to 90°F on Wednesday.",
+            "icon": "rain",
+            "data": [
+                {
+                    "time": 1460476800,
+                    "summary": "Light rain in the morning and evening.",
+                    "icon": "rain",
+                    "sunriseTime": 1460496959,
+                    "sunsetTime": 1460541369,
+                    "moonPhase": 0.21,
+                    "precipIntensity": 0.0062,
+                    "precipIntensityMax": 0.0158,
+                    "precipIntensityMaxTime": 1460484000,
+                    "precipProbability": 0.56,
+                    "precipType": "rain",
+                    "temperatureMin": 79.33,
+                    "temperatureMinTime": 1460491200,
+                    "temperatureMax": 92.18,
+                    "temperatureMaxTime": 1460527200,
+                    "apparentTemperatureMin": 79.82,
+                    "apparentTemperatureMinTime": 1460491200,
+                    "apparentTemperatureMax": 105.69,
+                    "apparentTemperatureMaxTime": 1460527200,
+                    "dewPoint": 75.28,
+                    "humidity": 0.75,
+                    "windSpeed": 6.56,
+                    "windBearing": 85,
+                    "cloudCover": 0.7,
+                    "pressure": 1009.38,
+                    "ozone": 241.73
+                }
+            ]
+        }
+        generate_forecast.return_value = forecastio.models.ForecastioDataBlock(d=mock_daily)
+        result = self.client.get('/weather_forecast?address=Lahug, Cebu City daily')
+        self.assertTrue(is_place_query_valid.called)
+        self.assertTrue(generate_forecast.called)
+        self.assertTrue(get_place_info.called)
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('temperatureMin: 79.33' in str(result.data))
+        self.assertTrue('temperatureMax: 92.18' in str(result.data))
+        self.assertTrue('humidity: 0.75' in str(result.data))
+        self.assertTrue('precipProbability: 0.56' in str(result.data))
+        self.assertTrue('summary: Light rain in the morning and evening.' in str(result.data))
