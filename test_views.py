@@ -73,74 +73,42 @@ class URLTest(unittest.TestCase):
         self.assertTrue(is_place_query_valid.called)
         self.assertEqual(result.status_code, 400)
 
-    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
-    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
+    @patch('app.geocode_api_parser.Geocode.get_address_query')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
-    @patch('app.geocode_api_parser.Geocode.get_coordinates')
-    @patch('app.geocode_api_parser.Geocode.get_place_info')
-    @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
-        check_geocode_api_is_present.return_value = True
-        check_forecast_api_is_present.return_value = True
-        is_place_query_valid.return_value = True
-        get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
-        get_place_info.return_value = {
-            'formatted_address': 'Lahug, Cebu City, Cebu, Philippines',
-            'place_type': 'neighborhood'
-        }
+    def test_valid_weather_url_valid_address(self, generate_forecast, get_address_query):
+        get_address_query.return_value =  {'results': [{'geometry': {'location': {'lat': 10.3338299, 'lng': 123.8941434}, 'bounds': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}, 'location_type': 'APPROXIMATE', 'viewport': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}}, 'place_id': 'ChIJA7wyKi-ZqTMRPmyxevF67Yw', 'types': ['neighborhood', 'political'], 'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'address_components': [{'short_name': 'Lahug', 'types': ['neighborhood', 'political'], 'long_name': 'Lahug'}]}], 'status': 'OK'}
         mock_currently = {'precipIntensity': 0.0305, 'ozone': 241.16, 'windBearing': 76, 'icon': 'partly-cloudy-day', 'summary': 'Partly Cloudy', 'apparentTemperature': 36.11, 'temperature': 31.79, 'time': 1460439452, 'pressure': 1008.13, 'precipProbability': 0.02, 'humidity': 0.58, 'cloudCover': 0.55, 'precipType': 'rain', 'windSpeed': 3.25, 'dewPoint': 22.58}
         generate_forecast.return_value = forecastio.models.ForecastioDataPoint(d=mock_currently)
 
         result = self.client.get('/weather_forecast?address=Lahug, Cebu City')
-        self.assertTrue(is_place_query_valid.called)
         self.assertTrue(generate_forecast.called)
-        self.assertTrue(get_place_info.called)
+        self.assertTrue(get_address_query.called)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('Temperature: 31.79' in str(result.data))
         self.assertTrue('Humidity: 0.58' in str(result.data))
         self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
         self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
-    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
-    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
+    @patch('app.geocode_api_parser.Geocode.get_address_query')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
-    @patch('app.geocode_api_parser.Geocode.get_coordinates')
-    @patch('app.geocode_api_parser.Geocode.get_place_info')
-    @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address_currently(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
-        check_geocode_api_is_present.return_value = True
-        check_forecast_api_is_present.return_value = True
-        is_place_query_valid.return_value = True
-        get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
-        get_place_info.return_value = {
-            'formatted_address': 'Lahug, Cebu City, Cebu, Philippines',
-            'place_type': 'neighborhood'
-        }
+    def test_valid_weather_url_valid_address_currently(self, generate_forecast, get_address_query):
+        get_address_query.return_value = {'results': [{'geometry': {'location': {'lat': 10.3338299, 'lng': 123.8941434}, 'bounds': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}, 'location_type': 'APPROXIMATE', 'viewport': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}}, 'place_id': 'ChIJA7wyKi-ZqTMRPmyxevF67Yw', 'types': ['neighborhood', 'political'], 'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'address_components': [{'short_name': 'Lahug', 'types': ['neighborhood', 'political'], 'long_name': 'Lahug'}]}], 'status': 'OK'}
         mock_currently = {'precipIntensity': 0.0305, 'ozone': 241.16, 'windBearing': 76, 'icon': 'partly-cloudy-day', 'summary': 'Partly Cloudy', 'apparentTemperature': 36.11, 'temperature': 31.79, 'time': 1460439452, 'pressure': 1008.13, 'precipProbability': 0.02, 'humidity': 0.58, 'cloudCover': 0.55, 'precipType': 'rain', 'windSpeed': 3.25, 'dewPoint': 22.58}
         generate_forecast.return_value = forecastio.models.ForecastioDataPoint(d=mock_currently)
 
         result = self.client.get('/weather_forecast?address=Lahug, Cebu City')
-        self.assertTrue(is_place_query_valid.called)
         self.assertTrue(generate_forecast.called)
-        self.assertTrue(get_place_info.called)
+        self.assertTrue(get_address_query.called)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('Temperature: 31.79' in str(result.data))
         self.assertTrue('Humidity: 0.58' in str(result.data))
         self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
         self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
-    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
-    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
+    @patch('app.geocode_api_parser.Geocode.get_address_query')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
-    @patch('app.geocode_api_parser.Geocode.get_coordinates')
-    @patch('app.geocode_api_parser.Geocode.get_place_info')
-    @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address_hourly(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
-        check_geocode_api_is_present.return_value = True
-        check_forecast_api_is_present.return_value = True
-        is_place_query_valid.return_value = True
-        get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
-        get_place_info.return_value = {'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'place_type': 'neighborhood'}
+    def test_valid_weather_url_valid_address_hourly(self, generate_forecast, get_address_query):
+        get_address_query.return_value  = {'results': [{'geometry': {'location': {'lat': 10.3338299, 'lng': 123.8941434}, 'bounds': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}, 'location_type': 'APPROXIMATE', 'viewport': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}}, 'place_id': 'ChIJA7wyKi-ZqTMRPmyxevF67Yw', 'types': ['neighborhood', 'political'], 'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'address_components': [{'short_name': 'Lahug', 'types': ['neighborhood', 'political'], 'long_name': 'Lahug'}]}], 'status': 'OK'}
         mock_hourly = {
             "summary": "Light rain starting this evening, continuing until tomorrow morning.",
             "icon": "rain",
@@ -166,27 +134,18 @@ class URLTest(unittest.TestCase):
         }
         generate_forecast.return_value = forecastio.models.ForecastioDataBlock(d=mock_hourly)
         result = self.client.get('/weather_forecast?address=Lahug, Cebu City hourly')
-        self.assertTrue(is_place_query_valid.called)
         self.assertTrue(generate_forecast.called)
-        self.assertTrue(get_place_info.called)
+        self.assertTrue(get_address_query.called)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('temperature: 89.06' in str(result.data))
         self.assertTrue('humidity: 0.59' in str(result.data))
         self.assertTrue('precipProbability: 0.11' in str(result.data))
         self.assertTrue('summary: Partly Cloudy' in str(result.data))
 
-    @patch('app.geocode_api_parser.Geocode.check_geocode_api_is_present')
-    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
-    @patch('app.geocode_api_parser.Geocode.get_coordinates')
-    @patch('app.geocode_api_parser.Geocode.get_place_info')
-    @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_valid_weather_url_valid_address_daily(self, is_place_query_valid, get_place_info, get_coordinates, generate_forecast, check_forecast_api_is_present, check_geocode_api_is_present):
-        check_forecast_api_is_present.return_value= True
-        check_geocode_api_is_present.return_value = True
-        is_place_query_valid.return_value = True
-        get_place_info.return_value = {'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'place_type': 'neighborhood'}
-        get_coordinates.return_value = {'lat': 10.3338299, 'lng': 123.8941434}
+    @patch('app.geocode_api_parser.Geocode.get_address_query')
+    def test_valid_weather_url_valid_address_daily(self, get_address_query, generate_forecast):
+        get_address_query.return_value = {'results': [{'geometry': {'location': {'lat': 10.3338299, 'lng': 123.8941434}, 'bounds': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}, 'location_type': 'APPROXIMATE', 'viewport': {'southwest': {'lat': 10.3190787, 'lng': 123.878746}, 'northeast': {'lat': 10.3492015, 'lng': 123.9091301}}}, 'place_id': 'ChIJA7wyKi-ZqTMRPmyxevF67Yw', 'types': ['neighborhood', 'political'], 'formatted_address': 'Lahug, Cebu City, Cebu, Philippines', 'address_components': [{'short_name': 'Lahug', 'types': ['neighborhood', 'political'], 'long_name': 'Lahug'}]}], 'status': 'OK'}
         mock_daily = {
             "summary": "Light rain throughout the week, with temperatures falling to 90°F on Wednesday.",
             "icon": "rain",
@@ -223,9 +182,8 @@ class URLTest(unittest.TestCase):
         }
         generate_forecast.return_value = forecastio.models.ForecastioDataBlock(d=mock_daily)
         result = self.client.get('/weather_forecast?address=Lahug, Cebu City daily')
-        self.assertTrue(is_place_query_valid.called)
+        self.assertTrue(get_address_query.called)
         self.assertTrue(generate_forecast.called)
-        self.assertTrue(get_place_info.called)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('temperatureMin: 79.33' in str(result.data))
         self.assertTrue('temperatureMax: 92.18' in str(result.data))
