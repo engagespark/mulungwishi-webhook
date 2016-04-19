@@ -43,14 +43,12 @@ def generate_forecast():
     is_place_valid = geocode.is_place_query_valid()
 
     if not is_place_valid:
-        return 'No results found. Try a more generic place name i.e. local, province', 400
+        return "Sorry, the location you sent in doesn't appear to be valid. Please check and try again. Thanks!", 400
 
     forecast = WeatherForecast()
     coordinates = geocode.get_coordinates()
     weather_forecast = forecast.generate_forecast(latitude=coordinates['lat'], longitude=coordinates['lng'], frequency=frequency)
-    place_info = geocode.get_place_info()
-    return 'WEATHER FORECAST FOR {}: \nPlace Type: {}\n{}'.\
-        format(place_info['formatted_address'].upper(), place_info['place_type'], display(forecast=weather_forecast, frequency=frequency))
+    return display(forecast=weather_forecast)
 
 
 @url.errorhandler(404)
@@ -72,7 +70,19 @@ def convert_to_readable_time(time):
     return time.strftime('%a %b %d, %Y %I:%M:%S %p')
 
 
-def display(forecast, frequency):
+def convert_to_celsius(temp):
+    return round((temp - 32) * 5 / 9, 2)
+
+
+def convert_to_percentage(amount):
+    return int(amount * 100)
+
+
+def display(forecast):
+    return "Temp: {}C / {}F, Humidity: {}%, Precip: {}%, Summary: {}".format(convert_to_celsius(forecast.temperature), forecast.temperature, convert_to_percentage(forecast.humidity), convert_to_percentage(forecast.precipProbability), forecast.summary)
+
+
+def display_all(forecast, frequency):
     if frequency == 'currently':
         return '{}\nTemperature: {}°C\nHumidity: {}\nProbability of Precipitation: {}\nWeather Summary: {}'.\
             format(convert_to_readable_time(forecast.time), round(forecast.temperature, 2), forecast.humidity, forecast.precipProbability, forecast.summary)

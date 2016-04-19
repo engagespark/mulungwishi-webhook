@@ -6,10 +6,7 @@ class WeatherForecast:
 
     def generate_forecast(self, latitude, longitude, frequency):
         forecast = self.get_forecast_request(latitude, longitude)
-        if frequency == 'hourly':
-            return forecast.hourly()
-        elif frequency == 'daily':
-            return forecast.daily()
+        #  ---------We won't support hourly and daily forecasts yet---------
         return forecast.currently()
 
     def get_forecast_request(self, latitude, longitude):

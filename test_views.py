@@ -84,11 +84,12 @@ class URLTest(unittest.TestCase):
         self.assertTrue(generate_forecast.called)
         self.assertTrue(get_address_query.called)
         self.assertEqual(result.status_code, 200)
-        self.assertTrue('Temperature: 31.79' in str(result.data))
-        self.assertTrue('Humidity: 0.58' in str(result.data))
-        self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
-        self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
+        self.assertTrue('Temp: -0.12C / 31.79F' in str(result.data))
+        self.assertTrue('Humidity: 57%' in str(result.data))
+        self.assertTrue('Precip: 2%' in str(result.data))
+        self.assertTrue('Summary: Partly Cloudy' in str(result.data))
 
+    @unittest.skip('This test will be enabled when frequency will also be enabled')
     @patch('app.geocode_api_parser.Geocode.get_address_query')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     def test_valid_weather_url_valid_address_currently(self, generate_forecast, get_address_query):
@@ -105,6 +106,7 @@ class URLTest(unittest.TestCase):
         self.assertTrue('Probability of Precipitation: 0.02' in str(result.data))
         self.assertTrue('Weather Summary: Partly Cloudy' in str(result.data))
 
+    @unittest.skip('This test will be enabled when frequency will also be enabled')
     @patch('app.geocode_api_parser.Geocode.get_address_query')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     def test_valid_weather_url_valid_address_hourly(self, generate_forecast, get_address_query):
@@ -142,6 +144,7 @@ class URLTest(unittest.TestCase):
         self.assertTrue('precipProbability: 0.11' in str(result.data))
         self.assertTrue('summary: Partly Cloudy' in str(result.data))
 
+    @unittest.skip('This test will be enabled when frequency will also be enabled')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
     @patch('app.geocode_api_parser.Geocode.get_address_query')
     def test_valid_weather_url_valid_address_daily(self, get_address_query, generate_forecast):
