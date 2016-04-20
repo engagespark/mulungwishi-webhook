@@ -32,13 +32,6 @@ def generate_forecast():
     if not place:
         return 'No address provided.', 400
 
-    frequency = 'currently'  # default forecast set to current
-    valid_frequency = ['currently', 'hourly', 'daily']
-    last_query = place.split(' ')[-1].lower()
-    if last_query in valid_frequency:
-        place = place.replace(last_query, '')  # replace time method(if present) with empty string so that only the place remains. Example query: cebu hourly
-        frequency = last_query
-
     geocode = Geocode(address=place)
     is_place_valid = geocode.is_place_query_valid()
 
@@ -47,7 +40,7 @@ def generate_forecast():
 
     forecast = WeatherForecast()
     coordinates = geocode.get_coordinates()
-    weather_forecast = forecast.generate_forecast(latitude=coordinates['lat'], longitude=coordinates['lng'], frequency=frequency)
+    weather_forecast = forecast.generate_forecast(latitude=coordinates['lat'], longitude=coordinates['lng'])
     return display(forecast=weather_forecast)
 
 
@@ -79,25 +72,11 @@ def convert_to_percentage(amount):
 
 
 def display(forecast):
-    return "Temp: {}C / {}F, Humidity: {}%, Precip: {}%, Summary: {}".format(convert_to_celsius(forecast.temperature), forecast.temperature, convert_to_percentage(forecast.humidity), convert_to_percentage(forecast.precipProbability), forecast.summary)
-
-
-def display_all(forecast, frequency):
-    if frequency == 'currently':
-        return '{}\nTemperature: {}°C\nHumidity: {}\nProbability of Precipitation: {}\nWeather Summary: {}'.\
-            format(convert_to_readable_time(forecast.time), round(forecast.temperature, 2), forecast.humidity, forecast.precipProbability, forecast.summary)
-
-    info = []
-    for count, item in enumerate(forecast.data):
-        info.append(str(convert_to_readable_time(item.time)))
-        if frequency == 'hourly':
-            info.append('temperature: ' + str(item.temperature))
-        else:
-            info.append('temperatureMin: ' + str(item.temperatureMin))
-            info.append('temperatureMax: ' + str(item.temperatureMax))
-        info.append('humidity: ' + str(item.humidity))
-        info.append('precipProbability: ' + str(item.precipProbability))
-        info.append('summary: ' + str(item.summary) + '\n')
-        if count > 12:
-            break
-    return '\n'.join(info)
+    forecast = forecast['currently']
+    return "Temp: {}C / {}F, Humidity: {}%, Precip: {}%, Summary: {}".format(
+        convert_to_celsius(forecast['temperature']),
+        forecast['temperature'],
+        convert_to_percentage(forecast['humidity']),
+        convert_to_percentage(forecast['precipProbability']),
+        forecast['summary']
+    )
