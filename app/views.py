@@ -1,6 +1,6 @@
 from app import mulungwishi_app as url
 from flask import render_template, request, url_for
-from .geocode_api_parser import Geocode
+from .geolocation_api_parser import Geolocation
 from .weather_parser import WeatherForecast
 
 
@@ -25,22 +25,23 @@ def show_user_input():
 
 @url.route('/weather_forecast')
 def generate_forecast():
-    if not Geocode.check_geocode_api_is_present() and WeatherForecast.check_forecast_api_is_present():
-        return url_for('page_server_error')
-
     place = request.args.get('address')
     if not place:
         return 'No address provided.', 400
 
-    geocode = Geocode(address=place)
+    if not Geolocation.check_geolocation_api_keys_are_present() and WeatherForecast.check_forecast_api_is_present():
+        return url_for('page_server_error')
+
+    geocode = Geolocation(address=place)
     is_place_valid = geocode.is_place_query_valid()
 
     if not is_place_valid:
         return "Sorry, the location you sent in doesn't appear to be valid. Please check and try again. Thanks!", 400
 
     forecast = WeatherForecast()
-    coordinates = geocode.get_coordinates()
-    weather_forecast = forecast.generate_forecast(latitude=coordinates['lat'], longitude=coordinates['lng'])
+    coordinates = geocode.coordinates
+    local_time = geocode.local_time
+    weather_forecast = forecast.generate_forecast(latitude=coordinates['lat'], longitude=coordinates['lng'], time=local_time)
     return display(forecast=weather_forecast)
 
 
