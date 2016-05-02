@@ -47,4 +47,4 @@ class Geolocation:
 
     @staticmethod
     def check_geolocation_api_keys_are_present():
-        return GEOCODE_API_KEY and TIMEZONE_API_KEY
+        return bool(GEOCODE_API_KEY) and bool(TIMEZONE_API_KEY)
