@@ -65,16 +65,35 @@ class URLTest(unittest.TestCase):
         result = self.client.get('/weather_forecast?address=')
         self.assertEqual(result.status_code, 400)
 
-    @patch('app.geocode_api_parser.Geocode.is_place_query_valid')
-    def test_invalid_weather_url_invalid_address(self, is_place_query_valid,):
+    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
+    @patch('app.geolocation_api_parser.Geolocation.check_geolocation_api_keys_are_present')
+    @patch('app.geolocation_api_parser.Geolocation.is_place_query_valid')
+    def test_invalid_weather_url_invalid_address(
+        self,
+        is_place_query_valid,
+        check_geolocation_api_keys_are_present,
+        check_forecast_api_is_present
+    ):
         is_place_query_valid.return_value = False
+        check_geolocation_api_keys_are_present.return_value = True
+        check_forecast_api_is_present = True
         result = self.client.get('/weather_forecast?address=pppppppppp')
         self.assertTrue(is_place_query_valid.called)
         self.assertEqual(result.status_code, 400)
 
+    @patch('app.weather_parser.WeatherForecast.check_forecast_api_is_present')
     @patch('app.weather_parser.WeatherForecast.generate_forecast')
-    @patch('app.geocode_api_parser.Geocode.get_address_query')
-    def test_valid_weather_url_valid_address(self, get_address_query, generate_forecast):
+    @patch('app.geolocation_api_parser.Geolocation.check_geolocation_api_keys_are_present')
+    @patch('app.geolocation_api_parser.Geolocation.local_time')
+    @patch('app.geolocation_api_parser.Geolocation.get_address_query')
+    def test_valid_weather_url_valid_address(
+        self,
+        get_address_query,
+        local_time,
+        check_geolocation_api_keys_are_present,
+        generate_forecast,
+        check_forecast_api_is_present
+    ):
         get_address_query.return_value = {
         'results': [{
             'geometry': {
@@ -85,6 +104,8 @@ class URLTest(unittest.TestCase):
         }], 
         'status': 'OK'
         }
+        local_time = '2013-05-06T12:00:00'
+        check_geolocation_api_keys_are_present.return_value = True
         mock_currently = {
         'currently': {
             'summary': 'Partly Cloudy',
@@ -94,6 +115,7 @@ class URLTest(unittest.TestCase):
             'humidity': 0.58,
             }
         }
+        check_geolocation_api_keys_are_present.return_value = True
         generate_forecast.return_value = mock_currently
         result = self.client.get('/weather_forecast?address=Lahug, Cebu City')
         self.assertTrue(generate_forecast.called)
