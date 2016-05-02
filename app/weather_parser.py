@@ -24,4 +24,4 @@ class WeatherForecast:
 
     @staticmethod
     def check_forecast_api_is_present():
-        return FORECAST_API_KEY
+        return bool(FORECAST_API_KEY)
