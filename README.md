@@ -30,8 +30,8 @@ Show travis build in github repo
 [![Build Status](https://travis-ci.org/engagespark/public-webhooks.svg?branch=master)](https://travis-ci.org/admiral96/mulungwishi-webhook)
 
 
-Deploying on toys.engagespark.com
----------------------------------
+Deploying
+---------
 You're gonna need a public key (`mulungwishi_rsa.pub`) and place it as `~/.ssh/mulungwishi_rsa.pub` to deploy.
 
 ```
